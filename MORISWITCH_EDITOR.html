@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MORISWITCH Editor</title>
+  <style>
+    :root{
+      --bg:#0b0f19;
+      --panel:#11182a;
+      --panel2:#0f1525;
+      --ink:#eaf0ff;
+      --muted:#9fb0d6;
+      --line:#26304a;
+      --accent:#7aa7ff;
+      --good:#2dd4bf;
+      --bad:#fb7185;
+      --warn:#fbbf24;
+      --btn:#182243;
+      --btn2:#1d2a55;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --r:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:radial-gradient(1200px 700px at 10% 0%, #13214a 0%, var(--bg) 55%) fixed;
+      color:var(--ink); font-family:var(--sans);
+    }
+    .wrap{max-width:1100px; margin:28px auto; padding:0 16px;}
+    header{
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      margin-bottom:16px;
+    }
+    .title{display:flex; flex-direction:column; gap:4px;}
+    .title h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .title p{margin:0; color:var(--muted); font-size:13px}
+    .topbar{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border:1px solid var(--line);
+      background:rgba(17,24,42,.55); border-radius:999px;
+      box-shadow: var(--shadow);
+    }
+    .statusDot{
+      width:10px; height:10px; border-radius:50%;
+      background:var(--bad);
+      box-shadow:0 0 0 3px rgba(251,113,133,.18);
+    }
+    .statusDot.ok{
+      background:var(--good);
+      box-shadow:0 0 0 3px rgba(45,212,191,.16);
+    }
+    button{
+      background:linear-gradient(180deg, var(--btn2), var(--btn));
+      color:var(--ink);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    button:hover{filter:brightness(1.07)}
+    button:disabled{opacity:.55; cursor:not-allowed; filter:none;}
+    .btnRow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    .btnGood{border-color:rgba(45,212,191,.45)}
+    .btnWarn{border-color:rgba(251,191,36,.45)}
+    .btnBad{border-color:rgba(251,113,133,.45)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background:linear-gradient(180deg, rgba(17,24,42,.88), rgba(13,18,32,.88));
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      background:rgba(7,10,18,.35);
+    }
+    .cardHead .h{display:flex; flex-direction:column; gap:2px;}
+    .cardHead .h strong{font-size:13px}
+    .cardHead .h span{color:var(--muted); font-size:12px}
+    .cardBody{padding:14px;}
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .tab{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      font-weight:700;
+      color:var(--muted);
+    }
+    .tab.on{
+      color:var(--ink);
+      border-color:rgba(122,167,255,.45);
+      box-shadow:0 0 0 3px rgba(122,167,255,.12) inset;
+    }
+    .tabBtn{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px dashed rgba(122,167,255,.45);
+      background:rgba(122,167,255,.10);
+      cursor:pointer;
+      user-select:none;
+      font-weight:800;
+      color:var(--ink);
+    }
+    .tabBtn.danger{
+      border:1px dashed rgba(251,113,133,.55);
+      background:rgba(251,113,133,.10);
+    }
+
+    .pedalboard{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .swCard{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    }
+    .swTop{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .badge{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(122,167,255,.15);
+      border:1px solid rgba(122,167,255,.25);
+      color:var(--ink);
+    }
+    .small{color:var(--muted); font-size:12px;}
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    label{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(4,6,10,.35);
+      color:var(--ink);
+      outline:none;
+    }
+    input::placeholder{color:#5f6e92}
+    .hint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .log{
+      font-family:var(--mono);
+      font-size:12px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      height:260px;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
+    .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    .kbd{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:2px 6px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:rgba(255,255,255,.04);
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1>MORISWITCH Editor</h1>
+      <p>6 switches · up to 12 banks · USB Serial (SET/SAVE/LOAD/DUMP)</p>
+    </div>
+
+    <div class="topbar">
+      <div class="pill">
+        <div id="dot" class="statusDot"></div>
+        <div style="display:flex; flex-direction:column; line-height:1.1">
+          <strong style="font-size:12px">Status</strong>
+          <span id="status" style="font-size:12px; color:var(--muted)">Not connected</span>
+        </div>
+      </div>
+
+      <div class="btnRow">
+        <button id="btnConnect">Connect</button>
+        <button id="btnDisconnect" class="btnBad" disabled>Disconnect</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="cardHead">
+        <div class="h">
+          <strong>Bank Editor</strong>
+          <span>라벨은 4글자 · 공백은 '_' 로 전송됨</span>
+        </div>
+        <div class="tabs" id="tabs"></div>
+      </div>
+
+      <div class="cardBody">
+        <div class="pedalboard" id="pedalboard"></div>
+
+        <div class="hint">
+          <div class="inline">
+            <span class="kbd">CC</span> Press/Release 값 전송
+            <span class="kbd">PC</span> Press 시 Program Change
+            <span class="kbd">BANK_UP/DOWN</span> Press 시 뱅크 이동
+            <span class="kbd">CC_TOGGLE</span> Press 할 때마다 <b>0 ↔ vPress</b> 토글
+            <span class="kbd">CC (ONE-SHOT)</span> Press 때만 <b>vPress</b> 1회 전송
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardHead">
+        <div class="h">
+          <strong>Device</strong>
+          <span>Send/Save/Load/Dump</span>
+        </div>
+        <div class="btnRow">
+          <button id="btnSend" class="btnGood" disabled>Send to RAM</button>
+          <button id="btnSave" class="btnWarn" disabled>Save (EEPROM)</button>
+          <button id="btnLoad" disabled>Load (EEPROM)</button>
+          <button id="btnDump" disabled>Dump</button>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="row">
+          <button id="btnClearLog">Clear Log</button>
+          <button id="btnPing" disabled>Ping</button>
+        </div>
+        <div id="log" class="log"></div>
+
+        <div class="hint">
+          Send to Ram: 임시 저장. Save (EEPROM): 영구 저장. Load (EEPROM): 본체에서 불러오기.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // --------- Banks ---------
+  const MAX_BANKS = 12;
+  let numBanks = 4;     // editable banks count (1..12)
+  let activeBank = 1;   // 1..numBanks
+
+  // --------- Switches ---------
+  const NUM_SW = 6;
+
+  // --------- Action Types ---------
+  const ACT = {
+    NONE: 0,
+    CC: 1,
+    PC: 2,
+    BANK_UP: 3,
+    BANK_DOWN: 4,
+    CC_TOGGLE: 5
+  ,
+    CC_ONE: 6
+  };
+
+  const typeOptions = [
+    {v:ACT.NONE,      t:"NONE"},
+    {v:ACT.CC,        t:"CC"},
+    {v:ACT.PC,        t:"PC"},
+    {v:ACT.BANK_UP,   t:"BANK UP"},
+    {v:ACT.BANK_DOWN, t:"BANK DOWN"},
+    {v:ACT.CC_TOGGLE, t:"CC (TOGGLE)"},
+      {v:ACT.CC_ONE,    t:"CC (ONE-SHOT)"},
+  ];
+
+  // cfg[bankIdx][swIdx]
+  // we allocate MAX_BANKS upfront to avoid resizing pain
+  const cfg = Array.from({length:MAX_BANKS}, () =>
+    Array.from({length:NUM_SW}, () => ({
+      label:"---",
+      type:ACT.NONE,
+      ch:1,
+      num:0,
+      vPress:127,
+      vRelease:0
+    }))
+  );
+
+  // defaults for first 4 banks: SW5=DOWN, SW6=UP
+  function applyDefaultForBank(bankIdx){
+    cfg[bankIdx][4] = {...cfg[bankIdx][4], label:"DWN", type:ACT.BANK_DOWN};
+    cfg[bankIdx][5] = {...cfg[bankIdx][5], label:"UP ", type:ACT.BANK_UP};
+  }
+  for(let b=0;b<numBanks;b++) applyDefaultForBank(b);
+
+  // --------- DOM ---------
+  const $ = sel => document.querySelector(sel);
+  const tabs = $("#tabs");
+  const board = $("#pedalboard");
+  const logEl = $("#log");
+  const dot = $("#dot");
+  const status = $("#status");
+
+  const btnConnect = $("#btnConnect");
+  const btnDisconnect = $("#btnDisconnect");
+  const btnSend = $("#btnSend");
+  const btnSave = $("#btnSave");
+  const btnLoad = $("#btnLoad");
+  const btnDump = $("#btnDump");
+  const btnPing = $("#btnPing");
+  const btnClearLog = $("#btnClearLog");
+
+  // --------- logging ---------
+  function log(line){
+    const ts = new Date().toLocaleTimeString();
+    logEl.textContent += `[${ts}] ${line}\n`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function setConnectedUI(ok){
+    dot.classList.toggle("ok", ok);
+    status.textContent = ok ? "Connected" : "Not connected";
+    btnDisconnect.disabled = !ok;
+    btnSend.disabled = !ok;
+    btnSave.disabled = !ok;
+    btnLoad.disabled = !ok;
+    btnDump.disabled = !ok;
+    btnPing.disabled = !ok;
+  }
+
+  // --------- Tabs (banks) ---------
+  function buildTabs(){
+    tabs.innerHTML = "";
+
+    for(let i=1;i<=numBanks;i++){
+      const t = document.createElement("div");
+      t.className = "tab" + (i===activeBank ? " on" : "");
+      t.textContent = `BANK ${i}`;
+      t.onclick = () => {
+        activeBank = i;
+        buildTabs();
+        renderBoard();
+      };
+      tabs.appendChild(t);
+    }
+
+    // + Add Bank
+    const add = document.createElement("div");
+    add.className = "tabBtn";
+    add.textContent = "+ Add";
+    add.onclick = () => addBank();
+    tabs.appendChild(add);
+
+    // Delete Bank
+    const del = document.createElement("div");
+    del.className = "tabBtn danger";
+    del.textContent = "Delete";
+    del.onclick = () => deleteActiveBank();
+    tabs.appendChild(del);
+
+    // disable buttons visually
+    add.style.opacity = (numBanks >= MAX_BANKS) ? ".5" : "1";
+    add.style.pointerEvents = (numBanks >= MAX_BANKS) ? "none" : "auto";
+
+    del.style.opacity = (numBanks <= 1) ? ".5" : "1";
+    del.style.pointerEvents = (numBanks <= 1) ? "none" : "auto";
+  }
+
+  function addBank(){
+    if(numBanks >= MAX_BANKS) return;
+
+    // init the new bank with defaults
+    const newIdx = numBanks; // 0-based
+    // reset to clean
+    for(let s=0;s<NUM_SW;s++){
+      cfg[newIdx][s] = {label:"---", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
+    }
+    applyDefaultForBank(newIdx);
+
+    numBanks++;
+    activeBank = numBanks;
+
+    buildTabs();
+    renderBoard();
+    log(`Bank added. Now ${numBanks} banks.`);
+
+    // optional: tell Arduino if it supports NBANKS,<n>
+    sendLineSafe(`NBANKS,${numBanks}`);
+  }
+
+  function deleteActiveBank(){
+    if(numBanks <= 1) return;
+    const delIdx = activeBank - 1;
+
+    // shift banks left: copy b+1 into b
+    for(let b=delIdx; b<numBanks-1; b++){
+      for(let s=0;s<NUM_SW;s++){
+        cfg[b][s] = {...cfg[b+1][s]};
+      }
+    }
+
+    // clear last bank slot
+    const lastIdx = numBanks - 1;
+    for(let s=0;s<NUM_SW;s++){
+      cfg[lastIdx][s] = {label:"---", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
+    }
+
+    numBanks--;
+    if(activeBank > numBanks) activeBank = numBanks;
+
+    buildTabs();
+    renderBoard();
+    log(`Bank deleted. Now ${numBanks} banks.`);
+
+    // optional: tell Arduino
+    sendLineSafe(`NBANKS,${numBanks}`);
+  }
+
+  // --------- Board ---------
+  function renderBoard(){
+    board.innerHTML = "";
+    const bankIdx = activeBank-1;
+
+    for(let i=0;i<NUM_SW;i++){
+      const s = cfg[bankIdx][i];
+
+      const card = document.createElement("div");
+      card.className = "swCard";
+
+      const top = document.createElement("div");
+      top.className = "swTop";
+      top.innerHTML = `<span class="badge">SW${i+1}</span><span class="small">Bank ${activeBank}</span>`;
+      card.appendChild(top);
+
+      const r1 = document.createElement("div");
+      r1.className = "row";
+      r1.appendChild(makeInput("Label (4)", s.label, v=>{
+        cfg[bankIdx][i].label = normalizeLabel(v);
+      }));
+      r1.appendChild(makeSelect("Type", s.type, typeOptions, v=>{
+        cfg[bankIdx][i].type = +v;
+        renderBoard();
+      }));
+      card.appendChild(r1);
+
+      const r2 = document.createElement("div");
+      r2.className = "row";
+      r2.appendChild(makeNumber("Channel", s.ch, 1, 16, v=>{
+        cfg[bankIdx][i].ch = clampInt(v,1,16);
+      }));
+      r2.appendChild(makeNumber("CC#/PC#", s.num, 0, 127, v=>{
+        cfg[bankIdx][i].num = clampInt(v,0,127);
+      }));
+      card.appendChild(r2);
+
+      const t = s.type;
+
+      if(t === ACT.CC){
+        const r3 = document.createElement("div");
+        r3.className = "row";
+        r3.appendChild(makeNumber("Press Val", s.vPress, 0, 127, v=>{
+          cfg[bankIdx][i].vPress = clampInt(v,0,127);
+        }));
+        r3.appendChild(makeNumber("Release Val", s.vRelease, 0, 127, v=>{
+          cfg[bankIdx][i].vRelease = clampInt(v,0,127);
+        }));
+        card.appendChild(r3);
+      } else if(t === ACT.CC_TOGGLE){
+        const r3 = document.createElement("div");
+        r3.className = "row";
+        r3.appendChild(makeNumber("On Val (vPress)", s.vPress, 0, 127, v=>{
+          cfg[bankIdx][i].vPress = clampInt(v,0,127);
+        }));
+        const off = document.createElement("label");
+        off.innerHTML = `Off Val (fixed)<input value="0" disabled />`;
+        r3.appendChild(off);
+        card.appendChild(r3);
+      }
+
+       else if(t === ACT.CC_ONE){
+        const r3 = document.createElement("div");
+        r3.className = "row";
+        r3.appendChild(makeNumber("Send Val (vPress)", s.vPress, 0, 127, v=>{
+          cfg[bankIdx][i].vPress = clampInt(v,0,127);
+        }));
+        const note = document.createElement("label");
+        note.innerHTML = `Release<input value="(none)" disabled />`;
+        r3.appendChild(note);
+        card.appendChild(r3);
+      }
+const h = document.createElement("div");
+      h.className = "hint";
+      h.textContent = hintForType(t);
+      card.appendChild(h);
+
+      board.appendChild(card);
+    }
+  }
+
+  function hintForType(t){
+if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
+    if(t===ACT.PC) return "PC: Press 시 Program Change 전송.";
+    if(t===ACT.BANK_UP) return "BANK UP: Press 시 컨트롤러 뱅크 +1 (LCD에 BANK 스플래시).";
+    if(t===ACT.BANK_DOWN) return "BANK DOWN: Press 시 컨트롤러 뱅크 -1 (LCD에 BANK 스플래시).";
+    if(t===ACT.CC_TOGGLE) return "CC Toggle: Press 할 때마다 0 ↔ vPress 토글 (Release 전송 없음).";
+        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Press 때만 vPress 1회 전송 (Release 전송 없음).";
+    return "NONE: 아무 동작 안 함.";
+  }
+
+  function normalizeLabel(v){
+    v = (v ?? "").toString().toUpperCase();
+    if(v.length > 4) v = v.slice(0,4);
+    while(v.length < 4) v += " ";
+    return v;
+  }
+
+  function clampInt(v, lo, hi){
+    const n = parseInt(v, 10);
+    if(Number.isNaN(n)) return lo;
+    return Math.min(hi, Math.max(lo, n));
+  }
+
+  function makeInput(title, value, onChange){
+    const lab = document.createElement("label");
+    const inp = document.createElement("input");
+    inp.value = value;
+    inp.maxLength = 4;
+    inp.placeholder = "4 chars";
+    inp.oninput = () => onChange(inp.value);
+    inp.onblur = () => { inp.value = normalizeLabel(inp.value); onChange(inp.value); };
+    lab.textContent = title;
+    lab.appendChild(inp);
+    return lab;
+  }
+
+  function makeNumber(title, value, min, max, onChange){
+    const lab = document.createElement("label");
+    const inp = document.createElement("input");
+    inp.type = "number";
+    inp.min = min;
+    inp.max = max;
+    inp.value = value;
+    inp.oninput = () => onChange(inp.value);
+    lab.textContent = title;
+    lab.appendChild(inp);
+    return lab;
+  }
+
+  function makeSelect(title, value, options, onChange){
+    const lab = document.createElement("label");
+    const sel = document.createElement("select");
+    for(const o of options){
+      const opt = document.createElement("option");
+      opt.value = o.v;
+      opt.textContent = o.t;
+      if(+value === +o.v) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    sel.onchange = () => onChange(sel.value);
+    lab.textContent = title;
+    lab.appendChild(sel);
+    return lab;
+  }
+
+  // --------- Serial (Web Serial) ---------
+  let port = null;
+  let reader = null;
+  let writer = null;
+  let readLoopRunning = false;
+
+  async function connect(){
+    try{
+      port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 115200 });
+
+      const enc = new TextEncoderStream();
+      const dec = new TextDecoderStream();
+
+      writer = enc.writable.getWriter();
+      reader = dec.readable.getReader();
+
+      enc.readable.pipeTo(port.writable);
+      port.readable.pipeTo(dec.writable);
+
+      setConnectedUI(true);
+      log("Connected.");
+
+      startReadLoop();
+    }catch(e){
+      log(`연결 실패: ${e.message || e}`);
+      setConnectedUI(false);
+      port = null;
+    }
+  }
+
+  async function disconnect(){
+    try{
+      readLoopRunning = false;
+      if(reader){ try{ await reader.cancel(); }catch{} }
+      if(writer){ try{ writer.releaseLock(); }catch{} }
+      if(port){ try{ await port.close(); }catch{} }
+    }finally{
+      reader = null; writer = null; port = null;
+      setConnectedUI(false);
+      log("Disconnected.");
+    }
+  }
+
+  async function sendLine(line){
+    if(!writer) return;
+    log(`=> ${line}`);
+    await writer.write(line + "\n");
+  }
+
+  // safe: if not connected, just log and skip
+  function sendLineSafe(line){
+    if(!writer){
+      log(`(not connected) => ${line}`);
+      return;
+    }
+    sendLine(line);
+  }
+
+  async function startReadLoop(){
+    if(readLoopRunning) return;
+    readLoopRunning = true;
+    let buf = "";
+
+    while(readLoopRunning && reader){
+      try{
+        const {value, done} = await reader.read();
+        if(done) break;
+        if(value){
+          buf += value;
+          let idx;
+          while((idx = buf.indexOf("\n")) >= 0){
+            const line = buf.slice(0, idx).replace("\r","").trim();
+            buf = buf.slice(idx+1);
+            if(line) onDeviceLine(line);
+          }
+        }
+      }catch(e){
+        log(`Read error: ${e.message || e}`);
+        break;
+      }
+    }
+
+    if(readLoopRunning){
+      log("Read loop ended.");
+      await disconnect();
+    }
+  }
+
+  function onDeviceLine(line){
+    log(`<= ${line}`);
+
+    // If Arduino supports these, we can sync UI:
+    if(line.startsWith("NBANKS,")){
+      const n = clampInt(line.substring(7), 1, MAX_BANKS);
+      numBanks = n;
+      if(activeBank > numBanks) activeBank = numBanks;
+      buildTabs();
+      renderBoard();
+      return;
+    }
+
+    if(line.startsWith("SET,")){
+      const parts = line.split(",");
+      if(parts.length >= 9){
+        const bank = +parts[1];
+        const sw = +parts[2];
+        const label = normalizeLabel((parts[3]||"---").replaceAll("_"," "));
+        const type = +parts[4];
+        const ch = +parts[5];
+        const num = +parts[6];
+        const vPress = +parts[7];
+        const vRelease = +parts[8];
+
+        if(bank>=1 && bank<=MAX_BANKS && sw>=1 && sw<=NUM_SW){
+          cfg[bank-1][sw-1] = {
+            label,
+            type: clampInt(type,0,6),
+            ch: clampInt(ch,1,16),
+            num: clampInt(num,0,127),
+            vPress: clampInt(vPress,0,127),
+            vRelease: clampInt(vRelease,0,127),
+          };
+          // if Arduino returns >4 banks, respect it:
+          if(bank > numBanks){
+            numBanks = Math.min(MAX_BANKS, bank);
+            if(activeBank > numBanks) activeBank = numBanks;
+            buildTabs();
+          }
+          if(bank === activeBank) renderBoard();
+        }
+      }
+    }
+  }
+
+  // --------- Send current editor state to device ---------
+  function makeSetLine(bank, sw, slot){
+    const lab = normalizeLabel(slot.label).replaceAll(" ","_");
+    return `SET,${bank},${sw},${lab},${slot.type},${slot.ch},${slot.num},${slot.vPress},${slot.vRelease}`;
+  }
+
+  async function sendAllToRAM(){
+    // tell device the number of banks (if supported)
+    await sendLine(`NBANKS,${numBanks}`);
+
+    for(let b=1;b<=numBanks;b++){
+      for(let s=1;s<=NUM_SW;s++){
+        const slot = cfg[b-1][s-1];
+        await sendLine(makeSetLine(b,s,slot));
+        await sleep(8);
+      }
+    }
+    log("Sent all SET lines (RAM).");
+  }
+
+  async function saveEEPROM(){
+    await sendAllToRAM();
+    await sendLine("SAVE");
+    log("SAVE requested.");
+  }
+
+  async function loadEEPROM(){
+    await sendLine("LOAD");
+    await sleep(50);
+    await sendLine("DUMP");
+    log("LOAD then DUMP requested.");
+  }
+
+  async function dump(){
+    await sendLine("DUMP");
+    log("DUMP requested.");
+  }
+
+  async function ping(){
+    await sendLine("DUMP");
+  }
+
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  // --------- Buttons ---------
+  btnConnect.onclick = async () => {
+    if(!("serial" in navigator)){
+      log("이 브라우저는 Web Serial을 지원 안 함. Chrome/Edge 써.");
+      return;
+    }
+    await connect();
+  };
+
+  btnDisconnect.onclick = disconnect;
+  btnSend.onclick = sendAllToRAM;
+  btnSave.onclick = saveEEPROM;
+  btnLoad.onclick = loadEEPROM;
+  btnDump.onclick = dump;
+  btnPing.onclick = ping;
+  btnClearLog.onclick = () => { logEl.textContent=""; };
+
+  // init
+  buildTabs();
+  renderBoard();
+  setConnectedUI(false);
+  log("Ready. Connect 누르고 포트 선택.");
+})();
+</script>
+</body>
+</html>
