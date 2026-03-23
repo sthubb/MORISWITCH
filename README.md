@@ -10,7 +10,7 @@
   <img src="image/moriswitch!.jpg" width="800">
 </p>
 
-> Configurable, fully open-source MIDI foot controller platform designed for musicians who want full control over their setup.
+> A Configurable, fully open-source MIDI foot controller platform designed for musicians who want full control over their setup.
 
 
 ## Context
