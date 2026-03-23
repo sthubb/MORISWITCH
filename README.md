@@ -1,1 +1,74 @@
-# MORISWITCH
+<p align="left">
+  <img src="image/logo.png" width="300">
+</p>
+
+![Version](https://img.shields.io/badge/version-1.0-blue)
+![Platform](https://img.shields.io/badge/platform-Arduino-green)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
+<p align="left">
+  <img src="image/moriswitch!.jpg" width="800">
+</p>
+
+> Configurable, fully open-source MIDI foot controller platform designed for musicians who want full control over their setup.
+
+
+## Context
+
+There are many DIY microcontroller-based MIDI controller projects designed to control MIDI-based music equipment. However, most of these projects rely on code-based configuration, making it difficult to quickly modify MIDI parameters. In addition, structured bank systems are often missing or limited, reducing flexibility during live performance. 
+
+Moriswitch was created to address these limitations by introducing a configurable architecture, a flexible bank system, and a web-based interface that allows users to modify behavior without changing the firmware.
+
+You can use many different 3D models on the repository to quickly print out enclosures to build your own Moriswitch, or make your own unique enclosure out of hammond enclosures, wood, empty pill box, or even cardboard!
+
+## Functions
+Moriswitch is a standalone MIDI foot controller capable of sending MIDI CC and PC messages across all 16 MIDI channels. It is primarily designed for controlling MIDI-enabled guitar pedalboard.
+
+With ATmega32U4-based Arduino boards (or teensy 3.x /4.x), Moriswitch can also operate as a USB MIDI device. This enables direct integration with DAWs and software environments such as Ableton Live, MainStage, Loopy Pro and etc.
+
+You can program individual footswitches with desired MIDI CC or PC values with the web editor, which is available in https://sthubb.github.io/MORISWITCH/
+
+## Hardware Requirements
+- Arduino board with ATmega32U4 (ex. Arduino Leonardo, Pro Micro) or Teensy 3.x, 4.x
+- DC input jack and DC step down buck converter (9V to 5V) * this is not required if you are only using USB bus power. However, I highly recommend using this if you are using Moriswitch with your standard guitar pedal power supply.
+- [x6 (recommended) Momentary SPST Footswitch](https://ko.aliexpress.com/item/1005004646906063.html?spm=a2g0o.productlist.main.15.11081ed37DtXsB&algo_pvid=f7af22fd-a6c7-4cbd-9302-b6cd93ec2bb8&algo_exp_id=f7af22fd-a6c7-4cbd-9302-b6cd93ec2bb8-14&pdp_ext_f=%7B%22order%22%3A%22339%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21KRW%2126973%2115367%21%21%2117.36%219.89%21%402102f0cc17742572339856801e5355%2112000029966854733%21sea%21KR%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3Ada32f33b%3Bm03_new_user%3A-29895%3BpisId%3A5000000201545898&curPageLogUid=dLw7PkuSQgi7&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005004646906063%7C_p_origin_prod%3A)
+- [Panel mounted USB-B or USB-C to Micro USB extension cable](https://ko.aliexpress.com/item/4001339369193.html?spm=a2g0o.productlist.main.1.1a4cNl4ANl4ALl&algo_pvid=d0e3c9d2-1e0f-4b8f-861b-d6604360429e&algo_exp_id=d0e3c9d2-1e0f-4b8f-861b-d6604360429e-0&pdp_ext_f=%7B%22order%22%3A%22193%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21KRW%214480%214480%21%21%212.88%212.88%21%400b1bf20a17742599804656112e042c%2110000015736136090%21sea%21KR%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3Ada32f33b%3Bm03_new_user%3A-29895&curPageLogUid=RKfiY8mMOpBr&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A4001339369193%7C_p_origin_prod%3A)
+- [Female 5Pin MIDI-DIN Port](https://ko.aliexpress.com/item/4000583940302.html?spm=a2g0o.productlist.main.21.372b457D457DHX&algo_pvid=42900f3e-be00-459a-9aab-9cbd49aead91&algo_exp_id=42900f3e-be00-459a-9aab-9cbd49aead91-20&pdp_ext_f=%7B%22order%22%3A%22814%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21KRW%212874%211243%21%21%211.85%210.80%21%402141115b17742600113885236e8070%2110000003419026890%21sea%21KR%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3Ada32f33b%3Bm03_new_user%3A-29895%3BpisId%3A5000000201545898&curPageLogUid=dDupSolANisD&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A4000583940302%7C_p_origin_prod%3A) and x2 220Ω resistors
+- (optional) LCD compatible with mainboard ([I2C](https://ko.aliexpress.com/item/1005006964073869.html?spm=a2g0o.productlist.main.3.29452d1ftEgVnx&algo_pvid=31f5d965-e20a-4f2f-aa67-998d3429ac63&algo_exp_id=31f5d965-e20a-4f2f-aa67-998d3429ac63-2&pdp_ext_f=%7B%22order%22%3A%226164%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21KRW%211880%211243%21%21%211.21%210.80%21%40212a6e3217742600338238187ec9b6%2112000038877067798%21sea%21KR%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3Ada32f33b%3Bm03_new_user%3A-29895%3BpisId%3A5000000201545900&curPageLogUid=v729dtakixUR&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005006964073869%7C_p_origin_prod%3A) recommended)
+
+## Installation
+
+### 1. Uploading code
+
+- Use your Arduino IDE and connect your Arduino board. Download and open MORISWITCH ino file on the IDE, and upload the code into the board.
+
+### 2. Construction
+
+- Choose your desired enclosure for the build. If you have an 3D printer, you can directly print out STL files on the repository or edit these files for your desired design on Fusion 360. If you don't want to use plastics on your build, you can always make your own desired enclosure using anything.
+- Wire all footswitches to share a common ground. This can be done by daisy-chaining the ground connections, as the microcontroller detects a button press when a pin is connected to GND.
+- Now you should wire the other pin on your SPST switches to the microcontroller. You have to be careful and choose what pins you are going to use for your footswitches.
+- For Arduino Leonardo, you have 13 digital pins and seperate SDL/SCA pin. However, you need TX/RX pins for MIDI communications, so try to avoid those pins. My recommendation is to use pins D5-D10.
+- For Arduino Pro Micro, on the other hand, you only have 12 digital pins and pin D2 and D3 is reserved for SDA/SCL which is crucial for I2C communication. My recommendation is to use pins D5-D10.
+- You can configure these pins on the ino file. If you accidentally wire these pins incorrectly, you can edit this line and make it function properly. For your information, SW1 is the top left, and SW6 is the bottom right.
+  
+  ```C++
+  const uint8_t switchPins[NUM_SW] = {5, 6, 7, 8, 9, 10}; // SW1..SW6
+  ```
+- Set your buck converter to send 5V DC. Connect the output to your mainboard, and input to the DC input jack.
+- Now you need to solder the Arduino TX pin to the MIDI DIN port. This is the pin number on MIDI ports.
+  <p align="left">
+    <img src="image/midi-labeled.png" width="300">
+  </p>
+  This can be confusing, so you should focus on the pin numbers that are labeled here.
+  
+  - Arduino TX pin -> 220Ohm Resistor -> DIN pin 5
+  - DC 5V -> 220Ohm Resistor -> DIN pin 4
+  - GND -> DIN pin 2
+
+- Connect your USB extension cable, and now you are ready to set it up!
+
+### 3. Setting Up
+
+Now, the best part about Moriswitch is the editor. It fully supports serial connection with the switch via Web browser. I recommend Chromium based browsers because they support USB-serial connection. Safari does not support this connection, so it can't communicate with the switch itself.
+
+
