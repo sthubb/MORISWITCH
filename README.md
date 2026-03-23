@@ -21,6 +21,12 @@ Moriswitch was created to address these limitations by introducing a configurabl
 
 You can use many different 3D models on the repository to quickly print out enclosures to build your own Moriswitch, or make your own unique enclosure out of hammond enclosures, wood, empty pill box, or even cardboard!
 
+If you make one with a 1602 I2C display, you can see the functions of the footswitches right on the LCD.
+
+<p align="left">
+  <img src="image/moriswitch!!.jpg" width="800">
+</p>
+
 ## Functions
 Moriswitch is a standalone MIDI foot controller capable of sending MIDI CC and PC messages across all 16 MIDI channels. It is primarily designed for controlling MIDI-enabled guitar pedalboard.
 
