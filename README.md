@@ -83,6 +83,8 @@ You can program individual footswitches with desired MIDI CC or PC values with t
   - This is where CC (One Shot) is used. This function sends only one CC value when it is pressed. 
   - CC (Toggle) mode is designed for pedals that receive different CC velocity values when sending same CC values. For example, On the Line 6 HX Stomp, sending CC velocity of 0 will bypass the effect block, and CC velocity of 127 will turn the effect on.
  
+- The 1602 LCD will display the function of each footswitch in 6 switch configuration. Each label can be long as 4 characters.  
+ 
 ## Development
 
 I am currently working on a MIDI clock feature, but integrating it into Moriswitch is still uncertain due to challenges in achieving accurate tap tempo calculation. I will continue improving the project and adding new features as development progresses.
