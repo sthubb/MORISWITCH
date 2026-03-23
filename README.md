@@ -2,7 +2,7 @@
   <img src="image/logo.png" width="300">
 </p>
 
-![Version](https://img.shields.io/badge/version-1.0-blue)
+![Version](https://img.shields.io/badge/version-1.2-blue)
 ![Platform](https://img.shields.io/badge/platform-Arduino-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
