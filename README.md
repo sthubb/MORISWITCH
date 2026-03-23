@@ -82,3 +82,11 @@ You can program individual footswitches with desired MIDI CC or PC values with t
   - Standard CC mode sends CC value when pressed, and also sends value when released. This is used for most of the standard MIDI devices. However, some pedals only wants to receive single MIDI message at press.
   - This is where CC (One Shot) is used. This function sends only one CC value when it is pressed. 
   - CC (Toggle) mode is designed for pedals that receive different CC velocity values when sending same CC values. For example, On the Line 6 HX Stomp, sending CC velocity of 0 will bypass the effect block, and CC velocity of 127 will turn the effect on.
+ 
+## Development
+
+I am currently working on a MIDI clock feature, but integrating it into Moriswitch is still uncertain due to challenges in achieving accurate tap tempo calculation. I will continue improving the project and adding new features as development progresses.
+
+If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project.
+
+Thank you for your interest in this project!
