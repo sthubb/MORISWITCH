@@ -118,6 +118,6 @@ v0.3.0 - Added Web-based Online Editor
 
 v1.0.0 - Stable release with full configuration system
 
-v1.1.0 - Added on-device editor
+v1.1.0 - Added on-device editor. Updated chord press logic to be more efficient.
 
 v1.2.0 - Added MIDIUSB support.
