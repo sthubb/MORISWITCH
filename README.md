@@ -15,6 +15,8 @@
 
 ## Context
 
+Hello, fellow musicians! 👻
+
 There are many DIY microcontroller-based MIDI controller projects designed to control MIDI-based music equipment. However, most of these projects rely on code-based configuration, making it difficult to quickly modify MIDI parameters. In addition, structured bank systems are often missing or limited, reducing flexibility during live performance. 
 
 Moriswitch was created to address these limitations by introducing a configurable architecture, a flexible bank system, and a web-based interface that allows users to modify behavior without changing the firmware.
@@ -104,6 +106,9 @@ I am currently working on a MIDI clock feature, but integrating it into Moriswit
 If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project. Contributions are welcome, but all changes are reviewed before merging.
 
 Thank you for your interest in this project!
+
+
+## Releases
 
 v0.1.0 - Initial release with basic bank system (up to 12 banks)
 
