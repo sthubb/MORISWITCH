@@ -104,3 +104,15 @@ I am currently working on a MIDI clock feature, but integrating it into Moriswit
 If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project. Contributions are welcome, but all changes are reviewed before merging.
 
 Thank you for your interest in this project!
+
+v0.1.0 - Initial release with basic bank system (up to 12 banks)
+
+v0.2.0 - Added CC Toggle mode
+
+v0.3.0 - Added Web-based Online Editor
+
+v1.0.0 - Stable release with full configuration system
+
+v1.1.0 - Added on-device editor
+
+v1.2.0 - Added MIDIUSB support.
