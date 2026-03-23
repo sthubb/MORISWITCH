@@ -91,7 +91,7 @@ You can program individual footswitches with desired MIDI CC or PC values with t
  
 - The 1602 LCD will display the function of each footswitch in 6 switch configuration. Each label can be long as 4 characters.
 
-- If you need quick value change, you can always press the switch you want to edit for 2 seconds, on-device editor will pop up where you can edit the CC values, switch types and most of the variables. When you are done editing, press Sve switch (which is the SW6)
+- If you need quick value change, you can always press the switch you want to edit for 2 seconds, on-device editor will pop up where you can edit the CC values, switch types and most of the variables. Press Switch 3 to scroll through pages, and when you are done editing, press Switch 6 to save and exit.
   
   <p align="left">
     <img src="image/ondevice.jpg" width="500">
