@@ -87,6 +87,6 @@ You can program individual footswitches with desired MIDI CC or PC values with t
 
 I am currently working on a MIDI clock feature, but integrating it into Moriswitch is still uncertain due to challenges in achieving accurate tap tempo calculation. I will continue improving the project and adding new features as development progresses.
 
-If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project.
+If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project. Contributions are welcome, but all changes are reviewed before merging.
 
 Thank you for your interest in this project!
