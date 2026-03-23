@@ -1,5 +1,6 @@
+
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -231,7 +232,7 @@
       <div class="cardHead">
         <div class="h">
           <strong>Bank Editor</strong>
-          <span>라벨은 4글자 · 공백은 '_' 로 전송됨</span>
+          <span>Labels are 4 characters · spaces are sent as '_'</span>
         </div>
         <div class="tabs" id="tabs"></div>
       </div>
@@ -241,11 +242,11 @@
 
         <div class="hint">
           <div class="inline">
-            <span class="kbd">CC</span> Press/Release 값 전송
-            <span class="kbd">PC</span> Press 시 Program Change
-            <span class="kbd">BANK_UP/DOWN</span> Press 시 뱅크 이동
-            <span class="kbd">CC_TOGGLE</span> Press 할 때마다 <b>0 ↔ vPress</b> 토글
-            <span class="kbd">CC (ONE-SHOT)</span> Press 때만 <b>vPress</b> 1회 전송
+            <span class="kbd">CC</span> Sends values on both press and release
+            <span class="kbd">PC</span> Sends Program Change on press
+            <span class="kbd">BANK_UP/DOWN</span> Changes bank on press
+            <span class="kbd">CC_TOGGLE</span> Toggles between <b>vRelease ↔ vPress</b> on each press
+            <span class="kbd">CC (ONE-SHOT)</span> Sends <b>vPress</b> once on press only
           </div>
         </div>
       </div>
@@ -273,7 +274,7 @@
         <div id="log" class="log"></div>
 
         <div class="hint">
-          Send to Ram: 임시 저장. Save (EEPROM): 영구 저장. Load (EEPROM): 본체에서 불러오기.
+          Send to RAM: temporary device memory. Save (EEPROM): persistent storage. Load (EEPROM): load saved data from the device.
         </div>
       </div>
     </div>
@@ -510,9 +511,9 @@
         r3.appendChild(makeNumber("On Val (vPress)", s.vPress, 0, 127, v=>{
           cfg[bankIdx][i].vPress = clampInt(v,0,127);
         }));
-        const off = document.createElement("label");
-        off.innerHTML = `Off Val (fixed)<input value="0" disabled />`;
-        r3.appendChild(off);
+        r3.appendChild(makeNumber("Off Val (vRelease)", s.vRelease, 0, 127, v=>{
+          cfg[bankIdx][i].vRelease = clampInt(v,0,127);
+        }));
         card.appendChild(r3);
       }
 
@@ -537,13 +538,13 @@ const h = document.createElement("div");
   }
 
   function hintForType(t){
-if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
-    if(t===ACT.PC) return "PC: Press 시 Program Change 전송.";
-    if(t===ACT.BANK_UP) return "BANK UP: Press 시 컨트롤러 뱅크 +1 (LCD에 BANK 스플래시).";
-    if(t===ACT.BANK_DOWN) return "BANK DOWN: Press 시 컨트롤러 뱅크 -1 (LCD에 BANK 스플래시).";
-    if(t===ACT.CC_TOGGLE) return "CC Toggle: Press 할 때마다 0 ↔ vPress 토글 (Release 전송 없음).";
-        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Press 때만 vPress 1회 전송 (Release 전송 없음).";
-    return "NONE: 아무 동작 안 함.";
+if(t===ACT.CC) return "CC: Sends on both press and release (vPress / vRelease).";
+    if(t===ACT.PC) return "PC: Sends Program Change on press.";
+    if(t===ACT.BANK_UP) return "BANK UP: Increments the controller bank on press (shows BANK splash on the LCD).";
+    if(t===ACT.BANK_DOWN) return "BANK DOWN: Decrements the controller bank on press (shows BANK splash on the LCD).";
+    if(t===ACT.CC_TOGGLE) return "CC Toggle: Alternates between vRelease and vPress on each press (no message on release).";
+        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Sends vPress once on press only (no message on release).";
+    return "NONE: No action.";
   }
 
   function normalizeLabel(v){
@@ -626,7 +627,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
 
       startReadLoop();
     }catch(e){
-      log(`연결 실패: ${e.message || e}`);
+      log(`Connection failed: ${e.message || e}`);
       setConnectedUI(false);
       port = null;
     }
@@ -783,7 +784,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
   // --------- Buttons ---------
   btnConnect.onclick = async () => {
     if(!("serial" in navigator)){
-      log("이 브라우저는 Web Serial을 지원 안 함. Chrome/Edge 써.");
+      log("This browser does not support Web Serial. Use Chrome or Edge.");
       return;
     }
     await connect();
@@ -801,7 +802,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
   buildTabs();
   renderBoard();
   setConnectedUI(false);
-  log("Ready. Connect 누르고 포트 선택.");
+  log("Ready. Click Connect and select a port.");
 })();
 </script>
 </body>
