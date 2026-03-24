@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -268,6 +268,7 @@
       <div class="cardBody">
         <div class="row">
           <button id="btnClearLog">Clear Log</button>
+          <button id="btnResetJson" class="btnBad">Reset Editor Data</button>
           <button id="btnPing" disabled>Ping</button>
         </div>
         <div id="log" class="log"></div>
@@ -283,11 +284,12 @@
 <script>
 (() => {
   const EDITOR_VERSION_TEXT = "Editor V1.2.0";
+  const DEFAULT_EDITOR_BANKS = 4;
   const BRAND_LINK_URL = "https://github.com/sthubb/MORISWITCH";
 
   // --------- Banks ---------
   const MAX_BANKS = 12;
-  let numBanks = 4;     // editable banks count (1..12)
+  let numBanks = DEFAULT_EDITOR_BANKS;     // editable banks count (1..12)
   let activeBank = 1;   // 1..numBanks
 
   // --------- Switches ---------
@@ -319,7 +321,7 @@
   // we allocate MAX_BANKS upfront to avoid resizing pain
   const cfg = Array.from({length:MAX_BANKS}, () =>
     Array.from({length:NUM_SW}, () => ({
-      label:"---",
+      label:"EMPT",
       type:ACT.NONE,
       ch:1,
       num:0,
@@ -330,8 +332,8 @@
 
   // defaults for first 4 banks: SW5=DOWN, SW6=UP
   function applyDefaultForBank(bankIdx){
-    cfg[bankIdx][4] = {...cfg[bankIdx][4], label:"DWN", type:ACT.BANK_DOWN};
-    cfg[bankIdx][5] = {...cfg[bankIdx][5], label:"UP ", type:ACT.BANK_UP};
+    cfg[bankIdx][4] = {...cfg[bankIdx][4], label:"DWN ", type:ACT.BANK_DOWN};
+    cfg[bankIdx][5] = {...cfg[bankIdx][5], label:"UP  ", type:ACT.BANK_UP};
   }
   for(let b=0;b<numBanks;b++) applyDefaultForBank(b);
 
@@ -356,6 +358,7 @@
   const btnDump = $("#btnDump");
   const btnPing = $("#btnPing");
   const btnClearLog = $("#btnClearLog");
+  const btnResetJson = $("#btnResetJson");
 
   // --------- logging ---------
   function log(line){
@@ -420,7 +423,7 @@
     const newIdx = numBanks; // 0-based
     // reset to clean
     for(let s=0;s<NUM_SW;s++){
-      cfg[newIdx][s] = {label:"---", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
+      cfg[newIdx][s] = {label:"EMPT", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
     }
     applyDefaultForBank(newIdx);
 
@@ -449,7 +452,7 @@
     // clear last bank slot
     const lastIdx = numBanks - 1;
     for(let s=0;s<NUM_SW;s++){
-      cfg[lastIdx][s] = {label:"---", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
+      cfg[lastIdx][s] = {label:"EMPT", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
     }
 
     numBanks--;
@@ -518,9 +521,9 @@
         r3.appendChild(makeNumber("On Val (vPress)", s.vPress, 0, 127, v=>{
           cfg[bankIdx][i].vPress = clampInt(v,0,127);
         }));
-        const off = document.createElement("label");
-        off.innerHTML = `Off Val (fixed)<input value="0" disabled />`;
-        r3.appendChild(off);
+        r3.appendChild(makeNumber("Off Val (vRelease)", s.vRelease, 0, 127, v=>{
+          cfg[bankIdx][i].vRelease = clampInt(v,0,127);
+        }));
         card.appendChild(r3);
       }
 
@@ -545,13 +548,13 @@ const h = document.createElement("div");
   }
 
   function hintForType(t){
-if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
-    if(t===ACT.PC) return "PC: Sends Program Change on press 전송.";
-    if(t===ACT.BANK_UP) return "BANK UP: Press 시 컨트롤러 뱅크 +1 (LCD에 BANK 스플래시).";
-    if(t===ACT.BANK_DOWN) return "BANK DOWN: Press 시 컨트롤러 뱅크 -1 (LCD에 BANK 스플래시).";
-    if(t===ACT.CC_TOGGLE) return "CC Toggle: Press 할 때마다 0 ↔ vPress 토글 (Release 전송 없음).";
-        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Press 때만 vPress 1회 전송 (Release 전송 없음).";
-    return "NONE: 아무 동작 안 함.";
+    if(t===ACT.CC) return "CC: Sends vPress on switch press and vRelease on switch release.";
+    if(t===ACT.PC) return "PC: Sends Program Change when the switch is pressed.";
+    if(t===ACT.BANK_UP) return "BANK UP: Advances the controller to the next bank and shows a BANK splash on the LCD.";
+    if(t===ACT.BANK_DOWN) return "BANK DOWN: Moves the controller to the previous bank and shows a BANK splash on the LCD.";
+    if(t===ACT.CC_TOGGLE) return "CC Toggle: Alternates between vRelease and vPress on each press. No release message is sent.";
+    if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Sends vPress once on press only. No release message is sent.";
+    return "NONE: No MIDI action is assigned to this switch.";
   }
 
   function normalizeLabel(v){
@@ -609,6 +612,29 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
     return lab;
   }
 
+  function makeEmptySlot(){
+    return {label:"EMPT", type:ACT.NONE, ch:1, num:0, vPress:127, vRelease:0};
+  }
+
+  function resetEditorData(){
+    const ok = window.confirm("Reset all editor data to defaults? This will clear the current in-browser configuration, set the bank count back to 4, and cannot be undone unless you have exported or saved a copy. The device itself will not change until you use Send to RAM or Save (EEPROM).");
+    if(!ok) return;
+
+    for(let b=0;b<MAX_BANKS;b++){
+      for(let s=0;s<NUM_SW;s++){
+        cfg[b][s] = makeEmptySlot();
+      }
+    }
+
+    numBanks = DEFAULT_EDITOR_BANKS;
+    activeBank = 1;
+    for(let b=0;b<numBanks;b++) applyDefaultForBank(b);
+
+    buildTabs();
+    renderBoard();
+    log(`Editor data reset to defaults (${numBanks} banks).`);
+  }
+
   // --------- Serial (Web Serial) ---------
   let port = null;
   let reader = null;
@@ -634,7 +660,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
 
       startReadLoop();
     }catch(e){
-      log(`연결 실패: ${e.message || e}`);
+      log(`Connection failed: ${e.message || e}`);
       setConnectedUI(false);
       port = null;
     }
@@ -716,7 +742,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
       if(parts.length >= 9){
         const bank = +parts[1];
         const sw = +parts[2];
-        const label = normalizeLabel((parts[3]||"---").replaceAll("_"," "));
+        const label = normalizeLabel((parts[3]||"EMPT").replaceAll("_"," "));
         const type = +parts[4];
         const ch = +parts[5];
         const num = +parts[6];
@@ -791,7 +817,7 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
   // --------- Buttons ---------
   btnConnect.onclick = async () => {
     if(!("serial" in navigator)){
-      log("이 브라우저는 Web Serial을 지원 안 함. Chrome/Edge 써.");
+      log("This browser does not support Web Serial. Use Chrome or Edge.");
       return;
     }
     await connect();
@@ -804,12 +830,13 @@ if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
   btnDump.onclick = dump;
   btnPing.onclick = ping;
   btnClearLog.onclick = () => { logEl.textContent=""; };
+  btnResetJson.onclick = resetEditorData;
 
   // init
   buildTabs();
   renderBoard();
   setConnectedUI(false);
-  log("Ready. Connect 누르고 포트 선택.");
+  log("Ready. Click Connect and select a serial port.");
 })();
 </script>
 </body>
