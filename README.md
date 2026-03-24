@@ -2,7 +2,7 @@
   <img src="image/logo.png" width="300">
 </p>
 
-![Version](https://img.shields.io/badge/version-1.0-blue)
+![Version](https://img.shields.io/badge/version-1.2-blue)
 ![Platform](https://img.shields.io/badge/platform-Arduino-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -80,11 +80,7 @@ You can program individual footswitches with desired MIDI CC or PC values with t
 - Now, the best part about Moriswitch is the editor. It fully supports serial connection with the device via a web browser. I recommend Chromium based browsers because they support USB-serial connection. Safari does not support this connection, so it can't communicate with the switch itself.
 - go to https://sthubb.github.io/MORISWITCH/ . You will see a Connect button on the top right end. Press it, and you will see serial port window asking you to choose a device. You should choose the Arduino from that window.
 - Now you can configure all the switches with your desired functions. Configure it as you wish, and whenever you want to edit the configuration, you can press the Load button to retrieve your configuration.
-- You can natively scroll through banks by pressing SW1 + SW2 (Bank Down), or SW2 + SW3 (Bank Up). You can configure dedicated footswitches to scroll through banks by assigning "BANK UP" or "BANK DOWN" function from the editor. On the source code, you can edit the chord response time from this line:
-
-  ```C++
-  const uint16_t CHORD_WINDOW_MS = 120; // Recommended range: 80-150 ms. Shorter feels faster but increases false triggers while pressing SW1+2 / SW2+3 to change banks
-  ```
+- You can natively scroll through banks by pressing SW4 + SW5 (Bank Down), or SW5 + SW6 (Bank Up). You can configure dedicated footswitches to scroll through banks by assigning "BANK UP" or "BANK DOWN" function from the editor. 
   
 - There are few MIDI message variants.
   - Standard CC mode sends CC value when pressed, and also sends value when released. This is used for most of the standard MIDI devices. However, some pedals pedals only want to receive single MIDI message at press.
