@@ -2,7 +2,7 @@
   <img src="image/logo.png" width="300">
 </p>
 
-![Version](https://img.shields.io/badge/version-1.2-blue)
+![Version](https://img.shields.io/badge/version-1.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Arduino-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -21,7 +21,7 @@ There are many DIY microcontroller-based MIDI controller projects designed to co
 
 Moriswitch was created to address these limitations by introducing a configurable architecture, a flexible bank system, and a web-based interface that allows users to modify behavior without changing the firmware.
 
-You can use many different 3D models on the repository to quickly print out enclosures to build your own Moriswitch, or make your own unique enclosure out of hammond enclosures, wood, empty pill box, or even cardboard!
+You can use many different 3D models in the repository to quickly print enclosures to build your own Moriswitch, or make your own unique enclosure out of Hammond enclosures, wood, empty pill box, or even cardboard!
 
 If you make one with a 1602 I2C display, you can see the functions of the footswitches right on the LCD.
 
@@ -30,9 +30,9 @@ If you make one with a 1602 I2C display, you can see the functions of the footsw
 </p>
 
 ## Functions
-Moriswitch is a standalone MIDI foot controller capable of sending MIDI CC and PC messages across all 16 MIDI channels. It is primarily designed for controlling MIDI-enabled guitar pedalboard.
+Moriswitch is a standalone MIDI foot controller capable of sending MIDI CC and PC messages across all 16 MIDI channels. It is primarily designed for controlling MIDI-enabled guitar pedalboards.
 
-With ATmega32U4-based Arduino boards (or teensy 3.x /4.x), Moriswitch can also operate as a USB MIDI device. This enables direct integration with DAWs and software environments such as Ableton Live, MainStage, Loopy Pro and etc.
+With ATmega32U4-based Arduino boards (or teensy 3.x /4.x), Moriswitch can also operate as a USB MIDI device. This enables direct integration with DAWs and software environments such as Ableton Live, MainStage, Loopy Pro, etc.
 
 You can program individual footswitches with desired MIDI CC or PC values with the web editor, which is available in https://sthubb.github.io/MORISWITCH/
 
@@ -52,11 +52,11 @@ You can program individual footswitches with desired MIDI CC or PC values with t
 
 ### 2. Construction
 
-- Choose your desired enclosure for the build. If you have an 3D printer, you can directly print out STL files on the repository or edit these files for your desired design on Fusion 360. If you don't want to use plastics on your build, you can always make your own desired enclosure using anything.
+- Choose your desired enclosure for the build. If you have a 3D printer, you can directly print out STL files on the repository or edit these files for your desired design on Fusion 360. If you don't want to use plastics on your build, you can always make your own desired enclosure using anything.
 - Wire all footswitches to share a common ground. This can be done by daisy-chaining the ground connections, as the microcontroller detects a button press when a pin is connected to GND.
 - Now you should wire the other pin on your SPST switches to the microcontroller. You have to be careful and choose what pins you are going to use for your footswitches.
-- For Arduino Leonardo, you have 13 digital pins and seperate SDL/SCA pin. However, you need TX/RX pins for MIDI communications, so try to avoid those pins. My recommendation is to use pins D5-D10.
-- For Arduino Pro Micro, on the other hand, you only have 12 digital pins and pin D2 and D3 is reserved for SDA/SCL which is crucial for I2C communication. My recommendation is to use pins D5-D10.
+- For Arduino Leonardo, you have 13 digital pins and separate SDA/SCL pins. However, you need TX/RX pins for MIDI communications, so try to avoid those pins. My recommendation is to use pins D5-D10.
+- For Arduino Pro Micro, on the other hand, you only have 12 digital pins and pin D2 and D3 are reserved for SDA/SCL which is crucial for I2C communication. My recommendation is to use pins D5-D10.
 - You can configure these pins on the ino file. If you accidentally wire these pins incorrectly, you can edit this line and make it function properly. For your information, SW1 is the top left, and SW6 is the bottom right.
   
   ```C++
@@ -67,7 +67,7 @@ You can program individual footswitches with desired MIDI CC or PC values with t
   <p align="left">
     <img src="image/midi-labeled.png" width="300">
   </p>
-  This can be confusing, so you should focus on the pin numbers that are labeled here.
+  This can be confusing, so just focus on the labeled pin numbers.
   
   - Arduino TX pin -> 220Ohm Resistor -> DIN pin 5
   - DC 5V -> 220Ohm Resistor -> DIN pin 4
@@ -77,19 +77,23 @@ You can program individual footswitches with desired MIDI CC or PC values with t
 
 ### 3. Setting Up
 
-- Now, the best part about Moriswitch is the editor. It fully supports serial connection with the switch via Web browser. I recommend Chromium based browsers because they support USB-serial connection. Safari does not support this connection, so it can't communicate with the switch itself.
-- go to https://sthubb.github.io/MORISWITCH/ . You will see Connect button on the top right end. Press it, and you will see serial port window asking you to choose device. You should choose the Arduino from that window.
-- Now you can configure all the switches with your desired functions. Configure it as you wish, and whenever you want to edit the configuration, you can press the Load button and start from there.
-- You can natively scroll through banks by pressing SW4 + SW5 (Bank Down), or SW5 + SW6 (Bank Up).
-- You can also configure dedicated footswitches to scroll through banks by assigning the "BANK UP" or "BANK DOWN" function in the editor. 
-- There are few MIDI message variants.
-  - Standard CC mode sends CC value when pressed, and also sends value when released. This is used for most of the standard MIDI devices. However, some pedals only wants to receive single MIDI message at press.
-  - This is where CC (One Shot) is used. This function sends only one CC value when it is pressed. 
-  - CC (Toggle) mode is designed for pedals that receive different CC velocity values when sending same CC values. For example, On the Line 6 HX Stomp, sending CC velocity of 0 will bypass the effect block, and CC velocity of 127 will turn the effect on.
- 
-- The 1602 LCD will display the function of each footswitch in 6 switch configuration. Each label can be long as 4 characters.
+- Now, the best part about Moriswitch is the editor. It fully supports serial connection with the device via a web browser. I recommend Chromium based browsers because they support USB-serial connection. Safari does not support this connection, so it can't communicate with the switch itself.
+- go to https://sthubb.github.io/MORISWITCH/ . You will see a Connect button on the top right end. Press it, and you will see serial port window asking you to choose a device. You should choose the Arduino from that window.
+- Now you can configure all the switches with your desired functions. Configure it as you wish, and whenever you want to edit the configuration, you can press the Load button to retrieve your configuration.
+- You can natively scroll through banks by pressing SW1 + SW2 (Bank Down), or SW2 + SW3 (Bank Up). You can configure dedicated footswitches to scroll through banks by assigning "BANK UP" or "BANK DOWN" function from the editor. On the source code, you can edit the chord response time from this line:
 
-- If you need quick value change, you can always press the switch you want to edit for 2 seconds, on-device editor will pop up where you can edit the CC values, switch types and most of the variables. Press Switch 3 to scroll through pages, and when you are done editing, press Switch 6 to save and exit.
+  ```C++
+  const uint16_t CHORD_WINDOW_MS = 120; // Recommended range: 80-150 ms. Shorter feels faster but increases false triggers while pressing SW1+2 / SW2+3 to change banks
+  ```
+  
+- There are few MIDI message variants.
+  - Standard CC mode sends CC value when pressed, and also sends value when released. This is used for most of the standard MIDI devices. However, some pedals pedals only want to receive single MIDI message at press.
+  - This is where CC (One Shot) is used. This function sends only one CC value when it is pressed. 
+  - CC (Toggle) mode is designed for pedals that receive different CC velocity values when sending same CC values. For example, On the Line 6 HX Stomp, sending a CC velocity value of 0 will bypass the effect block, and CC velocity of 127 will turn the effect on.
+ 
+- The 1602 LCD will display the function of each footswitch in 6 switch configuration. Each label can be up to 4 characters long.
+
+- If you need to quickly change values, you can always press the switch you want to edit for 2 seconds, an on-device editor will pop up where you can edit the CC values, switch types and most of the variables. Press Switch 3 to navigate between pages, and when you are done editing, press Switch 6 to save and exit.
   
   <p align="left">
     <img src="image/ondevice.jpg" width="500">
@@ -102,7 +106,6 @@ I am currently working on a MIDI clock feature, but integrating it into Moriswit
 If you have any ideas, feature requests, or suggestions, feel free to open an issue or contribute to the project. Contributions are welcome, but all changes are reviewed before merging.
 
 Thank you for your interest in this project!
-
 
 ## Releases
 
