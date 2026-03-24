@@ -4,7 +4,7 @@
 
 ![Version](https://img.shields.io/badge/version-1.2-blue)
 ![Platform](https://img.shields.io/badge/platform-Arduino-green)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![License](https://img.shields.io/badge/license-GPL-lightgrey)
 
 <p align="left">
   <img src="image/moriswitch!.jpg" width="800">
