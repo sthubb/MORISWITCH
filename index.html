@@ -1,6 +1,5 @@
-
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -34,9 +33,9 @@
       display:flex; gap:14px; align-items:center; justify-content:space-between;
       margin-bottom:16px;
     }
-    .title{display:flex; flex-direction:column; gap:4px;}
-    .title h1{margin:0; font-size:18px; letter-spacing:.2px}
-    .title p{margin:0; color:var(--muted); font-size:13px}
+    .brandLink{display:inline-flex; align-items:center; text-decoration:none; gap:10px;}
+    .brandLogo{display:block; height:40px; width:auto; max-width:220px; object-fit:contain;}
+    .brandVersion{font-size:14px; color:var(--muted); font-weight:700; letter-spacing:.02em; white-space:nowrap;}
     .topbar{
       display:flex; gap:10px; align-items:center; flex-wrap:wrap;
       justify-content:flex-end;
@@ -206,10 +205,10 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="title">
-      <h1>MORISWITCH Editor</h1>
-      <p>6 switches · up to 12 banks · USB Serial (SET/SAVE/LOAD/DUMP)</p>
-    </div>
+    <a class="brandLink" id="brandLink" href="https://github.com/sthubb/MORISWITCH" aria-label="Moriswitch GitHub repository">
+      <img src="image/logo.png" alt="Moriswitch" class="brandLogo">
+      <span id="brandVersion" class="brandVersion">Editor V1.2.0</span>
+    </a>
 
     <div class="topbar">
       <div class="pill">
@@ -232,7 +231,7 @@
       <div class="cardHead">
         <div class="h">
           <strong>Bank Editor</strong>
-          <span>Labels are 4 characters · spaces are sent as '_'</span>
+          <span>Labels are 4 characters. Spaces are sent as underscores.</span>
         </div>
         <div class="tabs" id="tabs"></div>
       </div>
@@ -242,11 +241,11 @@
 
         <div class="hint">
           <div class="inline">
-            <span class="kbd">CC</span> Sends values on both press and release
+            <span class="kbd">CC</span> Sends Press/Release values
             <span class="kbd">PC</span> Sends Program Change on press
             <span class="kbd">BANK_UP/DOWN</span> Changes bank on press
-            <span class="kbd">CC_TOGGLE</span> Toggles between <b>vRelease ↔ vPress</b> on each press
-            <span class="kbd">CC (ONE-SHOT)</span> Sends <b>vPress</b> once on press only
+            <span class="kbd">CC_TOGGLE</span> Toggles <b>vRelease ↔ vPress</b> on each press
+            <span class="kbd">CC (ONE-SHOT)</span> Sends <b>vPress</b> once on press
           </div>
         </div>
       </div>
@@ -274,7 +273,7 @@
         <div id="log" class="log"></div>
 
         <div class="hint">
-          Send to RAM: temporary device memory. Save (EEPROM): persistent storage. Load (EEPROM): load saved data from the device.
+          Send to RAM: temporary write. Save (EEPROM): persistent save. Load (EEPROM): read from device.
         </div>
       </div>
     </div>
@@ -283,6 +282,9 @@
 
 <script>
 (() => {
+  const EDITOR_VERSION_TEXT = "Editor V1.2.0";
+  const BRAND_LINK_URL = "https://github.com/sthubb/MORISWITCH";
+
   // --------- Banks ---------
   const MAX_BANKS = 12;
   let numBanks = 4;     // editable banks count (1..12)
@@ -340,6 +342,11 @@
   const logEl = $("#log");
   const dot = $("#dot");
   const status = $("#status");
+  const brandLink = $("#brandLink");
+  const brandVersion = $("#brandVersion");
+
+  if (brandVersion) brandVersion.textContent = EDITOR_VERSION_TEXT;
+  if (brandLink) brandLink.href = BRAND_LINK_URL;
 
   const btnConnect = $("#btnConnect");
   const btnDisconnect = $("#btnDisconnect");
@@ -511,9 +518,9 @@
         r3.appendChild(makeNumber("On Val (vPress)", s.vPress, 0, 127, v=>{
           cfg[bankIdx][i].vPress = clampInt(v,0,127);
         }));
-        r3.appendChild(makeNumber("Off Val (vRelease)", s.vRelease, 0, 127, v=>{
-          cfg[bankIdx][i].vRelease = clampInt(v,0,127);
-        }));
+        const off = document.createElement("label");
+        off.innerHTML = `Off Val (fixed)<input value="0" disabled />`;
+        r3.appendChild(off);
         card.appendChild(r3);
       }
 
@@ -538,13 +545,13 @@ const h = document.createElement("div");
   }
 
   function hintForType(t){
-if(t===ACT.CC) return "CC: Sends on both press and release (vPress / vRelease).";
-    if(t===ACT.PC) return "PC: Sends Program Change on press.";
-    if(t===ACT.BANK_UP) return "BANK UP: Increments the controller bank on press (shows BANK splash on the LCD).";
-    if(t===ACT.BANK_DOWN) return "BANK DOWN: Decrements the controller bank on press (shows BANK splash on the LCD).";
-    if(t===ACT.CC_TOGGLE) return "CC Toggle: Alternates between vRelease and vPress on each press (no message on release).";
-        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Sends vPress once on press only (no message on release).";
-    return "NONE: No action.";
+if(t===ACT.CC) return "CC: Press/Release 둘 다 전송 (vPress / vRelease).";
+    if(t===ACT.PC) return "PC: Sends Program Change on press 전송.";
+    if(t===ACT.BANK_UP) return "BANK UP: Press 시 컨트롤러 뱅크 +1 (LCD에 BANK 스플래시).";
+    if(t===ACT.BANK_DOWN) return "BANK DOWN: Press 시 컨트롤러 뱅크 -1 (LCD에 BANK 스플래시).";
+    if(t===ACT.CC_TOGGLE) return "CC Toggle: Press 할 때마다 0 ↔ vPress 토글 (Release 전송 없음).";
+        if(t===ACT.CC_ONE) return "CC (ONE-SHOT): Press 때만 vPress 1회 전송 (Release 전송 없음).";
+    return "NONE: 아무 동작 안 함.";
   }
 
   function normalizeLabel(v){
@@ -627,7 +634,7 @@ if(t===ACT.CC) return "CC: Sends on both press and release (vPress / vRelease)."
 
       startReadLoop();
     }catch(e){
-      log(`Connection failed: ${e.message || e}`);
+      log(`연결 실패: ${e.message || e}`);
       setConnectedUI(false);
       port = null;
     }
@@ -784,7 +791,7 @@ if(t===ACT.CC) return "CC: Sends on both press and release (vPress / vRelease)."
   // --------- Buttons ---------
   btnConnect.onclick = async () => {
     if(!("serial" in navigator)){
-      log("This browser does not support Web Serial. Use Chrome or Edge.");
+      log("이 브라우저는 Web Serial을 지원 안 함. Chrome/Edge 써.");
       return;
     }
     await connect();
@@ -802,7 +809,7 @@ if(t===ACT.CC) return "CC: Sends on both press and release (vPress / vRelease)."
   buildTabs();
   renderBoard();
   setConnectedUI(false);
-  log("Ready. Click Connect and select a port.");
+  log("Ready. Connect 누르고 포트 선택.");
 })();
 </script>
 </body>
