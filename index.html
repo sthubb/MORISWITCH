@@ -559,11 +559,10 @@ const h = document.createElement("div");
 
   function normalizeLabel(v){
     v = (v ?? "").toString().toUpperCase();
-    if(v.length > 4) v = v.slice(0,4);
-    while(v.length < 4) v += " ";
+    if(v.length > 6) v = v.slice(0,6);
+    while(v.length < 6) v += " ";
     return v;
-  }
-
+}
   function clampInt(v, lo, hi){
     const n = parseInt(v, 10);
     if(Number.isNaN(n)) return lo;
@@ -574,8 +573,8 @@ const h = document.createElement("div");
     const lab = document.createElement("label");
     const inp = document.createElement("input");
     inp.value = value;
-    inp.maxLength = 4;
-    inp.placeholder = "4 chars";
+    inp.maxLength = 6;
+    inp.placeholder = "6 chars";
     inp.oninput = () => onChange(inp.value);
     inp.onblur = () => { inp.value = normalizeLabel(inp.value); onChange(inp.value); };
     lab.textContent = title;
